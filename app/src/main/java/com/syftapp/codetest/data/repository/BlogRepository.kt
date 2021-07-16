@@ -10,7 +10,7 @@ import com.syftapp.codetest.data.model.domain.User
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
 
 class BlogRepository(
     private val postDao: PostDao,

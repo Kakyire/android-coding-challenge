@@ -19,7 +19,7 @@ interface BlogService {
     fun getPosts(): Single<List<Post>>
 
     companion object {
-        fun createService(retrofit: Retrofit) = retrofit.create(BlogService::class.java)
+        fun createService(retrofit: Retrofit): BlogService = retrofit.create(BlogService::class.java)
     }
 
 }

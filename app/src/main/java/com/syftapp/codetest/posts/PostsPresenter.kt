@@ -4,7 +4,7 @@ import com.syftapp.codetest.data.model.domain.Post
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
 
 class PostsPresenter(private val getPostsUseCase: GetPostsUseCase) : KoinComponent {
 

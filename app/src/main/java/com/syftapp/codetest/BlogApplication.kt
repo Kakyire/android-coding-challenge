@@ -6,6 +6,7 @@ import com.syftapp.codetest.di.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import timber.log.Timber
 
 class BlogApplication : Application() {
 
@@ -16,6 +17,10 @@ class BlogApplication : Application() {
             androidLogger()
             androidContext(this@BlogApplication)
             modules(networkModule, dataModule, useCaseModule, presenterModule)
+        }
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
         }
 
         if (BuildConfig.DEBUG) {

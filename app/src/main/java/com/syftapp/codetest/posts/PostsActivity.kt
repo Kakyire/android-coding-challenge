@@ -8,26 +8,30 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.syftapp.codetest.Navigation
 import com.syftapp.codetest.R
 import com.syftapp.codetest.data.model.domain.Post
-import kotlinx.android.synthetic.main.activity_posts.*
-import org.koin.android.ext.android.inject
-import org.koin.core.KoinComponent
+import com.syftapp.codetest.databinding.ActivityPostsBinding
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class PostsActivity : AppCompatActivity(), PostsView, KoinComponent {
 
     private val presenter: PostsPresenter by inject()
     private lateinit var navigation: Navigation
 
-    private lateinit var adapter: PostsAdapter
+    private lateinit var postsAdapter: PostsAdapter
 
+    private lateinit var binding: ActivityPostsBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_posts)
+        binding = ActivityPostsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         navigation = Navigation(this)
 
-        listOfPosts.layoutManager = LinearLayoutManager(this)
-        val separator = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-        listOfPosts.addItemDecoration(separator)
-
+        binding.listOfPosts.apply {
+            layoutManager = LinearLayoutManager(this@PostsActivity)
+            val separator =
+                DividerItemDecoration(this@PostsActivity, DividerItemDecoration.VERTICAL)
+            addItemDecoration(separator)
+        }
         presenter.bind(this)
     }
 
@@ -47,26 +51,31 @@ class PostsActivity : AppCompatActivity(), PostsView, KoinComponent {
     }
 
     private fun showLoading() {
-        error.visibility = View.GONE
-        listOfPosts.visibility = View.GONE
-        loading.visibility = View.VISIBLE
+        binding.apply {
+            error.visibility = View.GONE
+            loading.visibility = View.VISIBLE
+        }
     }
 
     private fun hideLoading() {
-        loading.visibility = View.GONE
+        binding.loading.visibility = View.GONE
     }
 
     private fun showPosts(posts: List<Post>) {
         // this is a fairly crude implementation, if it was Flowable, it would
         // be better to use DiffUtil and consider notifyRangeChanged, notifyItemInserted, etc
         // to preserve animations on the RecyclerView
-        adapter = PostsAdapter(posts, presenter)
-        listOfPosts.adapter = adapter
-        listOfPosts.visibility = View.VISIBLE
+        postsAdapter = PostsAdapter(posts, presenter)
+        binding.listOfPosts.apply {
+            adapter = postsAdapter
+            visibility = View.VISIBLE
+        }
     }
 
     private fun showError(message: String) {
-        error.visibility = View.VISIBLE
-        error.setText(message)
+        binding.error.apply {
+            visibility = View.VISIBLE
+            text = message
+        }
     }
 }

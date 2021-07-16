@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.syftapp.codetest.R
 import com.syftapp.codetest.data.model.domain.Post
-import kotlinx.android.synthetic.main.view_post_list_item.view.*
+import com.syftapp.codetest.databinding.ViewPostListItemBinding
 
 class PostsAdapter(
     private val data: List<Post>,
@@ -25,15 +25,18 @@ class PostsAdapter(
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        holder.bind(data.get(position))
+        holder.bind(data[position])
     }
 }
 
 class PostViewHolder(private val view: View, private val presenter: PostsPresenter) : RecyclerView.ViewHolder(view) {
-
+    private val binding = ViewPostListItemBinding.bind(view)
     fun bind(item: Post) {
-        view.postTitle.text = item.title
-        view.bodyPreview.text = item.body
+        binding.apply {
+            val title="${item.id} ${item.title}"
+            postTitle.text = title
+            bodyPreview.text = item.body
+        }
         view.setOnClickListener { presenter.showDetails(item) }
     }
 
