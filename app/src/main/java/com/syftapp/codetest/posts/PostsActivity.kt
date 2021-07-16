@@ -2,11 +2,14 @@ package com.syftapp.codetest.posts
 
 import android.os.Bundle
 import android.view.View
+import android.widget.AbsListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.syftapp.codetest.Navigation
 import com.syftapp.codetest.R
+import com.syftapp.codetest.TOTAL_POSTS
 import com.syftapp.codetest.data.model.domain.Post
 import com.syftapp.codetest.databinding.ActivityPostsBinding
 import org.koin.core.component.KoinComponent
@@ -16,6 +19,8 @@ class PostsActivity : AppCompatActivity(), PostsView, KoinComponent {
 
     private val presenter: PostsPresenter by inject()
     private lateinit var navigation: Navigation
+
+    private var isScrolling = false
 
     private lateinit var postsAdapter: PostsAdapter
 
@@ -32,7 +37,51 @@ class PostsActivity : AppCompatActivity(), PostsView, KoinComponent {
                 DividerItemDecoration(this@PostsActivity, DividerItemDecoration.VERTICAL)
             addItemDecoration(separator)
         }
+
+        loadMorePost()
+
         presenter.bind(this)
+    }
+
+    //load more posts if not at the end of the posts data from remote
+    //or if all data has not been cached
+    private fun loadMorePost() {
+
+
+        binding.listOfPosts.apply {
+            val layoutManager = layoutManager as LinearLayoutManager
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                        isScrolling = true
+                    }
+                }
+
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+                    val totalItemCount = layoutManager.itemCount
+                    val visibleItems = layoutManager.childCount
+                    val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
+
+
+                    //check if all posts has been loaded
+                    val reachEndOfPage = totalItemCount == TOTAL_POSTS
+
+                    if (isScrolling &&
+                        !reachEndOfPage &&
+                        (visibleItems + firstVisibleItem) >= totalItemCount
+                    ) {
+                        presenter.loadMorePosts()
+                        isScrolling = false
+                    }
+                }
+            })
+
+
+        }
     }
 
     override fun onDestroy() {

@@ -57,7 +57,6 @@ class PostDetailActivity : AppCompatActivity(), PostDetailView, KoinComponent {
             binding.postTitle.visibility = this
             binding.postBody.visibility = this
 
-            // TODO add comments
         }
 
         binding.apply {
