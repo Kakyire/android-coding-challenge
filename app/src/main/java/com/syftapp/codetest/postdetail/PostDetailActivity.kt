@@ -39,9 +39,7 @@ class PostDetailActivity : AppCompatActivity(), PostDetailView, KoinComponent {
         when (state) {
             is PostDetailScreenState.Loading -> showLoading()
             is PostDetailScreenState.Error -> {
-                // a fairly crude error, and boot them back to the list. The UX could be nicer here
-                Toast.makeText(this, R.string.display_post_error_message, Toast.LENGTH_SHORT).show()
-                finish()
+                showError()
             }
             is PostDetailScreenState.DataAvailable -> showPost(state.post)
             is PostDetailScreenState.FinishedLoading -> hideLoading()
@@ -75,6 +73,13 @@ class PostDetailActivity : AppCompatActivity(), PostDetailView, KoinComponent {
         }
 
         binding.loading.visibility = View.VISIBLE
+    }
+    private fun showError() {
+        val message=getString(R.string.display_post_error_message)
+        binding.error.apply {
+            visibility = View.VISIBLE
+            text = message
+        }
     }
 
     companion object {

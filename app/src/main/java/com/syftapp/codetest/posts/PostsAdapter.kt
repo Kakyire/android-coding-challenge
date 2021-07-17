@@ -3,15 +3,26 @@ package com.syftapp.codetest.posts
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.syftapp.codetest.R
 import com.syftapp.codetest.data.model.domain.Post
 import com.syftapp.codetest.databinding.ViewPostListItemBinding
 
 class PostsAdapter(
-    private val data: List<Post>,
     private val presenter: PostsPresenter
-) : RecyclerView.Adapter<PostViewHolder>() {
+) : ListAdapter<Post, PostViewHolder>(DiffUtilClass()) {
+
+    private class DiffUtilClass : DiffUtil.ItemCallback<Post>() {
+        override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -20,20 +31,18 @@ class PostsAdapter(
         return PostViewHolder(view, presenter)
     }
 
-    override fun getItemCount(): Int {
-        return data.size
-    }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        holder.bind(data[position])
+        holder.bind(getItem(position))
     }
 }
 
-class PostViewHolder(private val view: View, private val presenter: PostsPresenter) : RecyclerView.ViewHolder(view) {
+class PostViewHolder(private val view: View, private val presenter: PostsPresenter) :
+    RecyclerView.ViewHolder(view) {
     private val binding = ViewPostListItemBinding.bind(view)
     fun bind(item: Post) {
         binding.apply {
-            val title="${item.id} ${item.title}"
+            val title = "${item.id} ${item.title}"
             postTitle.text = title
             bodyPreview.text = item.body
         }
